@@ -59,3 +59,8 @@ extern/rt64/
 runtime-recomp/RecompiledFuncs/
 build/runtime-tools/
 runtime-recomp/build/
+
+# --- macOS port: build artifacts, ROMs and local machine state ---
+*.app/
+.macos-tools/
+*.toml.bak

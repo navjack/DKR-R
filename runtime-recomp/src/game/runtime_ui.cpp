@@ -4016,6 +4016,16 @@ dkr::runtime::ui::StartupResult dkr::runtime::ui::run_startup_screen(SDL_Window*
         ImGui::End();
 
         ImGui::Render();
+        // The window is created with SDL_WINDOW_ALLOW_HIGHDPI, so on a Retina
+        // display the renderer's output is in pixels while ImGui lays out and
+        // emits vertices in points. Without this the UI draws into the
+        // top-left quadrant at half scale, and because
+        // ImGui_ImplSDLRenderer2_RenderDrawData scales its clip rects by
+        // FramebufferScale, the mismatched clip rects also shear off the left
+        // edge of the sidebar text. Scaling the renderer puts vertices and
+        // clip rects back in the same space.
+        const ImVec2 framebuffer_scale = ImGui::GetIO().DisplayFramebufferScale;
+        SDL_RenderSetScale(renderer, framebuffer_scale.x, framebuffer_scale.y);
         SDL_SetRenderDrawColor(renderer, 6, 9, 14, 255);
         SDL_RenderClear(renderer);
         ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());

@@ -19,7 +19,10 @@ if data.get("schemaVersion") != 1:
 
 for dependency in data["dependencies"]:
     repo = root / dependency["repositoryPath"]
-    if not (repo / ".git").is_dir():
+    # A submodule's .git is a FILE containing "gitdir: ...", not a directory, so
+    # is_dir() silently skipped every submodule dependency (notably N64Recomp) and
+    # its patches never applied. Use exists() so both layouts are detected.
+    if not (repo / ".git").exists():
         print(f"[SKIP] {dependency['name']}: checkout not present at {repo}")
         continue
     commit = subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip()
